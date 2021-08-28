@@ -4,25 +4,82 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.0.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.didiglobal.booster:booster-gradle-plugin:3.5.0"
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath "com.didiglobal.booster:booster-gradle-plugin:4.0.0"
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+tasks.register('packageDistribution', Zip) {
+    archiveFileName = "my-distribution.zip"
+    destinationDirectory = layout.buildDirectory.dir('dist')
+    from layout.buildDirectory
+}
+
+tasks.register('ensureDirectory') { doLast { mkdir "images" } }
+
+tasks.register('to') { doLast { mkdir "to" } }
+
+tasks.register('moveReports') {
+    doLast {
+        ant.move file: "images/reports",
+                todir: "${buildDir}/toArchive"
+    }
+}
+
+tasks.register('cleanTempFiles', Delete) {
+    delete fileTree("images")
+}
+
+/*class GreetingPlugin implements Plugin<Project> {
+
+    void apply(Project project) {
+        project.task('hello') {
+            doLast { println 'Hello from the GreetingPlugin' }
+        }
+    }
+}
+
+abstract class GreetingPluginExtension {
+    abstract Property<String> getMessage()
+
+    GreetingPluginExtension() { message.convention('Hello from GreetingPlugin') }
+}*/
+
+interface GreetingPluginExtension {
+    Property<String> getMessage()
+
+    Property<String> getGreeter()
+}
+
+class GreetingPlugin implements Plugin<Project> {
+    void apply(Project project) {
+        def extension = project.extensions.create('greeting', GreetingPluginExtension)
+
+        project.task('hello') {
+            doLast { println "${extension.message.get()} from ${extension.greeter.get()}" }
+
+        }
+    }
+}
+
+apply plugin: GreetingPlugin
+
+// Configure the extension using a DSL block
+greeting {
+    message = 'Hi'
+    greeter = 'Gradle'
 }
