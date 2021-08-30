@@ -25,18 +25,12 @@ buildscript {
         mavenLocal()
         mavenCentral()
         google()
-        jcenter()
         maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/google' }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 apply plugin: 'kotlin'
@@ -73,7 +67,6 @@ repositories {
     mavenLocal()
     mavenCentral()
     google()
-    jcenter()
     maven { url 'https://maven.aliyun.com/repository/public' }
     maven { url 'https://maven.aliyun.com/repository/google' }
 }
